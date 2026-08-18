@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Our Travel List</title>
+  <style>
+    :root { --ink:#161616; --muted:#6e6e6e; --paper:#fff; --soft:#f4f4f4; --line:#dedede; --shadow:0 14px 35px rgba(0,0,0,.07); }
+    * { box-sizing:border-box; } body { margin:0; color:var(--ink); background:#f5f5f5; font-family:"Pretendard Variable","Pretendard","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",Arial,sans-serif; }
+    button,input,textarea,select { font:inherit; } button { cursor:pointer; }
+    .wrap { max-width:1220px; margin:auto; padding:28px 22px 50px; }
+    header { display:flex; align-items:flex-start; justify-content:space-between; gap:20px; padding:12px 0 30px; }
+    .eyebrow { color:var(--muted); letter-spacing:.13em; font-weight:800; font-size:.75rem; text-transform:uppercase; margin:0 0 8px; }
+    h1 { font-size:clamp(2.2rem,5vw,4.35rem); line-height:.98; margin:0; letter-spacing:-.06em; font-weight:800; }
+    h1 span { color:var(--muted); } .subtitle { color:var(--muted); margin:14px 0 0; }
+    .edit-button,.primary { border:0; background:var(--ink); color:white; padding:12px 16px; border-radius:999px; font-weight:700; box-shadow:var(--shadow); }
+    .edit-button.on { background:#444; } .hero { background:#e8e8e8; min-height:150px; border-radius:24px; padding:25px; display:grid; grid-template-columns:1fr auto; align-items:end; gap:20px; position:relative; overflow:hidden; }
+    .hero:after { content:"✦  ✈  ☼"; position:absolute; right:26px; top:16px; color:#999; font-size:3rem; letter-spacing:12px; transform:rotate(-6deg); opacity:.6; }
+    .hero h2 { font-size:clamp(1.4rem,3vw,2rem); font-weight:800; line-height:1.15; margin:0; max-width:480px; position:relative; z-index:1; } .count { background:#fff9; border-radius:14px; padding:13px 17px; font-weight:800; position:relative; z-index:1; }
+    .tabs { display:flex; gap:9px; margin:26px 0 17px; } .tab { border:1px solid var(--line); background:var(--paper); color:var(--muted); border-radius:999px; padding:10px 15px; font-weight:700; } .tab.active { color:var(--ink); background:#fff; border-color:var(--ink); }
+    .panel { display:none; } .panel.active { display:block; } .board { display:grid; grid-template-columns:repeat(auto-fill,minmax(255px,1fr)); gap:16px; }
+    .card { background:var(--paper); border:1px solid var(--line); border-radius:18px; padding:19px; min-height:205px; box-shadow:0 4px 12px rgba(0,0,0,.025); display:flex; flex-direction:column; }
+    .card-top { display:flex; gap:10px; align-items:flex-start; } .place-icon { background:#eee; width:42px; height:42px; border-radius:12px; display:grid; place-items:center; font-size:1.3rem; flex:none; } .place { margin:1px 0 3px; font-size:1.05rem; } .location { margin:0; color:var(--muted); font-size:.85rem; }
+    .note { margin:15px 0; color:#494949; line-height:1.5; font-size:.92rem; flex:1; } .badge { align-self:flex-start; font-size:.75rem; border-radius:20px; padding:5px 9px; background:#eee; color:#444; font-weight:800; }
+    .rating { color:#333; letter-spacing:1px; margin-top:auto; } .review { font-size:.85rem; color:var(--muted); margin:7px 0 0; }
+    .actions { display:flex; gap:7px; margin-top:15px; padding-top:13px; border-top:1px solid var(--line); } .small { padding:7px 9px; background:#fff; border:1px solid var(--line); border-radius:8px; color:var(--ink); font-size:.8rem; font-weight:700; } .small.danger { color:#bd5144; }
+    .add-card { border:2px dashed #bdbdbd; background:#ffffff6e; align-items:center; justify-content:center; color:#666; text-align:center; min-height:205px; } .add-card span { font-size:2rem; line-height:1; } .add-card strong { display:block; margin-top:8px; }
+    .emoji-picker { display:grid; grid-template-columns:repeat(10,1fr); gap:5px; margin-top:7px; } .emoji-option { border:1px solid var(--line); background:#fff; border-radius:8px; aspect-ratio:1; padding:0; font-size:1.05rem; } .emoji-option.selected { border:2px solid var(--ink); background:#eee; }
+    .empty { grid-column:1/-1; padding:45px; background:#ffffff75; border-radius:18px; text-align:center; color:var(--muted); }
+    dialog { border:0; padding:0; border-radius:20px; width:min(92vw,480px); box-shadow:0 25px 60px #0003; } dialog::backdrop { background:#f5f5f5; } .modal { padding:25px; } .modal h3 { font-size:1.55rem; font-weight:800; margin:0 0 20px; } label { display:block; font-size:.84rem; font-weight:800; margin:13px 0 6px; } input,textarea,select { width:100%; border:1px solid #d9d9d9; background:#fff; border-radius:9px; padding:10px 11px; color:var(--ink); } input[type="password"] { -webkit-text-security:disc; } textarea { min-height:78px; resize:vertical; } .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; } .modal-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:20px; } .cancel { background:#eee; border:0; border-radius:999px; padding:11px 14px; font-weight:700; }
+    .locked { opacity:.55; pointer-events:none; } .lock-note { color:var(--muted); font-size:.86rem; margin:0 0 16px; } .password-row { display:flex; gap:8px; } .password-row input { flex:1; }
+    @media(max-width:620px) { .wrap { padding:18px 14px 36px; } header { padding-bottom:20px; } .edit-button { padding:10px 13px; } .hero { min-height:180px; grid-template-columns:1fr; } .hero:after { font-size:2rem; right:10px; } .form-grid { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <div><p class="eyebrow">Travel bucket list</p><h1>어디를 <span>갈까요!</span></h1></div>
+    </header>
+    <nav class="tabs"><button class="tab active" data-tab="wish">가고 싶은 곳 <span id="wishNum"></span></button><button class="tab" data-tab="done">다녀온 곳 <span id="doneNum"></span></button></nav>
+    <section id="wish" class="panel active"><div class="board" id="wishBoard"></div></section>
+    <section id="done" class="panel"><div class="board" id="doneBoard"></div></section>
+  </main>
+
+  <dialog id="authDialog"><form class="modal" id="authForm"><h3>수정 권한 확인</h3><p class="lock-note">비밀번호를 입력하면 여행지를 수정할 수 있어요.</p><div class="password-row"><input id="password" type="password" inputmode="numeric" placeholder="비밀번호" autocomplete="current-password" required autofocus><button class="primary" type="submit">확인</button></div></form></dialog>
+  <dialog id="placeDialog"><form class="modal" id="placeForm"><h3 id="formTitle">여행지 추가</h3><input type="hidden" id="placeId"><div class="form-grid"><div><label>여행지 이름</label><input id="name" required placeholder="예: 포르투"></div><div><label>국가 · 지역</label><input id="location" required placeholder="예: 포르투갈"></div></div><label>이모지 선택</label><input id="emoji" type="hidden" value="📍"><div class="emoji-picker" id="emojiPicker"></div><label>메모</label><textarea id="note" placeholder="왜 가고 싶은지 적어보세요"></textarea><div id="reviewFields" hidden><div class="form-grid"><div><label>별점</label><select id="stars"><option value="5">★★★★★ 5점</option><option value="4">★★★★☆ 4점</option><option value="3">★★★☆☆ 3점</option><option value="2">★★☆☆☆ 2점</option><option value="1">★☆☆☆☆ 1점</option></select></div><div><label>방문 시기</label><input id="visitedAt" placeholder="예: 2026. 08"></div></div><label>한줄평</label><textarea id="review" placeholder="기억에 남는 한마디"></textarea></div><div class="modal-actions"><button type="button" class="cancel" onclick="placeDialog.close()">취소</button><button class="primary" type="submit">저장하기</button></div></form></dialog>
+  <dialog id="visitDialog"><form class="modal" id="visitForm"><h3>다녀온 여행 기록</h3><input type="hidden" id="visitId"><label>별점</label><select id="visitStars"><option value="5">★★★★★ 5점</option><option value="4">★★★★☆ 4점</option><option value="3">★★★☆☆ 3점</option><option value="2">★★☆☆☆ 2점</option><option value="1">★☆☆☆☆ 1점</option></select><label>한줄평 <span style="font-weight:400;color:#777">(선택)</span></label><textarea id="visitReview" placeholder="기억에 남는 한마디"></textarea><div class="modal-actions"><button type="button" class="cancel" onclick="visitDialog.close()">취소</button><button class="primary" type="submit">기록하기</button></div></form></dialog>
+
+  <script>
+    const seed = [
+      {id:1,name:'리스본',location:'포르투갈',emoji:'🚋',note:'노란 트램을 타고 골목을 천천히 걷기',status:'wish'},
+      {id:2,name:'오로라 마을',location:'아이슬란드',emoji:'✨',note:'겨울 밤하늘 아래에서 오로라 보기',status:'wish'},
+      {id:3,name:'교토',location:'일본',emoji:'⛩️',note:'계절마다 한 번씩, 오래 머물고 싶은 도시',status:'done',stars:5,review:'비 오는 날의 골목이 특히 아름다웠다.',visitedAt:'2025. 11'}
+    ];
+    let places = JSON.parse(localStorage.getItem('travel-places') || 'null') || seed;
+    let editing = false;
+    const EDIT_PASSWORD = '0000';
+    const emojis = ['📍','✈️','🏖️','🏔️','🌊','🌆','🏛️','🍜','🎡','🌿'];
+    const $ = id => document.getElementById(id);
+    const isSet = () => !!localStorage.getItem('travel-password');
+    const save = () => localStorage.setItem('travel-places', JSON.stringify(places));
+    function esc(s='') { const d=document.createElement('div');d.textContent=s;return d.innerHTML; }
+    function render() {
+      for (const status of ['wish','done']) {
+        const board=$(status+'Board'), list=places.filter(p=>p.status===status);
+        board.innerHTML=list.map(p=>`<article class="card"><div class="card-top"><div class="place-icon">${esc(p.emoji||'📍')}</div><div><h3 class="place">${esc(p.name)}</h3><p class="location">${esc(p.location)}</p></div></div>${p.visitedAt?`<span class="badge">${esc(p.visitedAt)} 방문</span>`:''}<p class="note">${esc(p.note||'')}</p>${status==='done'?`<div class="rating">${'★'.repeat(p.stars||0)}${'☆'.repeat(5-(p.stars||0))}</div><p class="review">${esc(p.review||'')}</p>`:''}<div class="actions ${editing?'':'locked'}"><button class="small" onclick="move(${p.id})">${status==='wish'?'다녀왔어요 ✓':'다시 가고 싶어요 ↩'}</button><button class="small" onclick="openEdit(${p.id})">수정</button><button class="small danger" onclick="removePlace(${p.id})">삭제</button></div></article>`).join('');
+        if (!list.length) board.innerHTML='<div class="empty">아직 등록된 여행지가 없어요.</div>';
+        if (editing) board.insertAdjacentHTML('beforeend', `<button class="card add-card" onclick="openAdd('${status}')"><span>＋</span><strong>${status==='wish'?'가고 싶은 곳 추가':'다녀온 곳 기록'}</strong></button>`);
+      }
+      $('wishNum').textContent=places.filter(p=>p.status==='wish').length;
+      $('doneNum').textContent=places.filter(p=>p.status==='done').length;
+    }
+    function renderEmojiPicker() { $('emojiPicker').innerHTML=emojis.map(item=>`<button type="button" class="emoji-option ${$('emoji').value===item?'selected':''}" onclick="chooseEmoji('${item}')">${item}</button>`).join(''); }
+    function chooseEmoji(item) { $('emoji').value=item; renderEmojiPicker(); }
+    function openAdd(status) { placeForm.reset(); $('placeId').value=''; $('emoji').value='📍'; renderEmojiPicker(); $('formTitle').textContent=status==='done'?'다녀온 곳 기록':'가고 싶은 곳 추가'; $('reviewFields').hidden=status!=='done'; placeDialog.dataset.status=status; placeDialog.showModal(); }
+    function openEdit(id) { const p=places.find(x=>x.id===id); $('placeId').value=p.id; $('name').value=p.name; $('location').value=p.location; $('emoji').value=p.emoji||'📍'; renderEmojiPicker(); $('note').value=p.note||''; $('stars').value=p.stars||5; $('review').value=p.review||''; $('visitedAt').value=p.visitedAt||''; $('formTitle').textContent='여행지 수정'; $('reviewFields').hidden=p.status!=='done'; placeDialog.dataset.status=p.status; placeDialog.showModal(); }
+    function move(id) { const p=places.find(x=>x.id===id); if(p.status==='wish') { $('visitId').value=id; $('visitStars').value='5'; $('visitReview').value=''; visitDialog.showModal(); return; } p.status='wish'; save(); render(); }
+    function removePlace(id) { if(confirm('이 여행지를 목록에서 삭제할까요?')) { places=places.filter(p=>p.id!==id); save(); render(); } }
+    authForm.onsubmit=e=>{ e.preventDefault(); const pass=$('password').value; if(pass!==EDIT_PASSWORD) { alert('비밀번호가 맞지 않아요.'); return; } $('password').value=''; authDialog.close(); editing=true; render(); };
+    authDialog.addEventListener('cancel', event => event.preventDefault());
+    placeForm.onsubmit=e=>{ e.preventDefault(); const id=Number($('placeId').value), existing=places.find(p=>p.id===id); const data={id:id||Date.now(),name:$('name').value.trim(),location:$('location').value.trim(),emoji:$('emoji').value.trim()||'📍',note:$('note').value.trim(),status:placeDialog.dataset.status,comments:existing?.comments||[]}; if(data.status==='done') Object.assign(data,{stars:Number($('stars').value),review:$('review').value.trim(),visitedAt:$('visitedAt').value.trim()}); if(id) places=places.map(p=>p.id===id?data:p); else places.unshift(data); save(); placeDialog.close(); render(); };
+    visitForm.onsubmit=e=>{ e.preventDefault(); const p=places.find(x=>x.id===Number($('visitId').value)); p.status='done'; p.stars=Number($('visitStars').value); p.review=$('visitReview').value.trim(); p.visitedAt=new Date().toLocaleDateString('ko-KR',{year:'numeric',month:'2-digit'}).replace(/\.$/,''); save(); visitDialog.close(); render(); };
+    document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{ document.querySelectorAll('.tab,.panel').forEach(x=>x.classList.remove('active')); b.classList.add('active'); $(b.dataset.tab).classList.add('active'); });
+    render();
+    authDialog.showModal();
+  </script>
+</body>
+</html>
